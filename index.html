@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raspberry Pico -- Micropython</title>
+</head>
+
+<body>
+    <div>
+        <h2 id="notSupported" style='color:red'>Not supported</h2>
+
+        <button id='connectButton'>Connect Now</button>
+        <button id='disconnectButton'>Disconnect Now</button>
+        <br/>
+        <button id='ctrla'>CTRL+a</button>
+        <button id='ctrlb'>CTRL+b</button>
+        <button id='ctrlc'>CTRL+c (double)</button>
+        <button id='ctrld'>CTRL+d</button>
+        <button id='ctrle'>CTRL+e</button>
+        <br/>
+        <button id='enterRawREPL'>Enter Raw REPL</button>
+        <button id='leaveRawREPL'>Leave Raw REPL</button>
+        <br/>
+        <br/>
+        <label>Input</label>
+        <br/>
+        <textarea rows="10" cols="80" id="multiLineInput" wrap="hard"></textarea>
+        <br/>
+        <button id="send">Send</button>
+        <button id="clear">Clear</button>
+        <br/>
+        <br/>
+        <label>Output</label>
+        <br/>
+        <textarea readonly rows="10" cols="80" id="multiLineOutput"></textarea>
+
+    </div>
+
+    <Script src="index.js"></Script>
+
+
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
+</body>
+
+</html>
