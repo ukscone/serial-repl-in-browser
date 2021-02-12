@@ -2,15 +2,11 @@
 <html lang="en">
 <head>
 
-  <!-- Basic Page Needs
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <meta charset="utf-8">
   <title>Serial Micropython REPL (pico)</title>
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <!-- Mobile Specific Metas
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   
@@ -40,14 +36,11 @@
 </head>
 <body>
 
-  <!-- Primary Page Layout
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-
     <div class="container">
-      <label for="ports">Port:</label>
+   <!--   <label for="ports">Port:</label>
   <select id="ports">
     <option value="prompt">Add a port...</option>
-  </select>
+  </select> -->
   <button id="connectButton">Connect</button>
   <button id='disconnectButton' disabled="true">Disconnect</button>
   <label for="baudrate">Baud rate:</label>
@@ -86,19 +79,19 @@
   </select>
       
       <br/>
-      <button id='ctrla'>CTRL+a</button>
-      <button id='ctrlb'>CTRL+b</button>
-      <button id='ctrlc'>CTRL+c (double)</button>
-      <button id='ctrld'>CTRL+d</button>
-      <button id='ctrle'>CTRL+e</button>
-      <br/>
+      <!-- <button id='ctrla'>CTRL+a</button>
+      <button id='ctrlb'>CTRL+b</button> -->
+      <button id='softReboot'>Soft Reboot</button>
+      <button id='break'>Break</button>
+      <button id='enterPasteMode'>Enter Paste Mode</button>
+      <button id='leavePasteMode'>Leave Paste Mode</button>
       <button id='enterRawREPL'>Enter Raw REPL</button>
       <button id='leaveRawREPL'>Leave Raw REPL</button>
       <br/>
       <br/>
       <label>Input</label>
       <br/>
-      <textarea rows="10" cols="80" id="multiLineInput" wrap="hard"></textarea>
+      <textarea rows="10" cols="60" id="multiLineInput" wrap="hard"></textarea>
       <br/>
       <button id="send">Send</button>
       <button id="clear">Clear</button>
@@ -106,14 +99,11 @@
       <br/>
       <label>Output</label>
       <br/>
-      <textarea readonly rows="10" cols="80" id="multiLineOutput"></textarea>
+      <textarea readonly rows="10" cols="60" id="multiLineOutput"></textarea>
 
     </div>
 
   
   <Script src="index.js"></Script>
-
-<!-- End Document
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
 </body>
 </html>

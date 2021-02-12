@@ -6,14 +6,14 @@ let inputStream;
 let outputStream;
 
 var inRawRepl = false;
+var controlChar = false;
 
 const connectButton = document.getElementById('connectButton');
 const disconnectButton = document.getElementById('disconnectButton')
-const ctrlAButton = document.getElementById('ctrla')
-const ctrlBButton = document.getElementById('ctrlb')
-const ctrlCButton = document.getElementById('ctrlc')
-const ctrlDButton = document.getElementById('ctrld')
-const ctrlEButton = document.getElementById('ctrle')
+const softRebootButton = document.getElementById('softReboot')
+const breakButton = document.getElementById('break')
+const leavePasteModeButton = document.getElementById('leavePasteMode')
+const enterPasteModeButton = document.getElementById('enterPasteMode')
 const enterRawREPLButton = document.getElementById('enterRawREPL')
 const leaveRawREPLButton = document.getElementById('leaveRawREPL')
 const sendButton = document.getElementById('send')
@@ -29,23 +29,21 @@ disconnectButton.addEventListener('click', e => {
     disconnect();
 })
 
-ctrlAButton.addEventListener('click', e => {
-    writeToStream('\01');
-})
-
-ctrlBButton.addEventListener('click', e => {
-    writeToStream('\02');
-})
-
-ctrlCButton.addEventListener('click', e => {
-    writeToStream('\03\03');
-})
-
-ctrlDButton.addEventListener('click', e => {
+softRebootButton.addEventListener('click', e => {
+    controlChar = true;
     writeToStream('\04');
 })
 
-ctrlEButton.addEventListener('click',e => {
+breakButton.addEventListener('click', e => {
+    controlChar = true;
+    writeToStream('\03\03');
+})
+
+leavePasteModeButton.addEventListener('click', e => {
+    writeToStream('\04');
+})
+
+enterPasteModeButton.addEventListener('click',e => {
     writeToStream('\05')
 } )
 
@@ -76,9 +74,10 @@ enterRawREPLButton.addEventListener('click',e => {
 } )
 
 leaveRawREPLButton.addEventListener('click',e => {
+    inRawRepl = false;
     console.log("leaving Raw REPL");
     writeToStream('\04\02')
-    inRawRepl = false;
+    
 } )
 
 
@@ -114,7 +113,7 @@ const connect = async () => {
     document.getElementById('parity').disabled = true;
     document.getElementById("disconnectButton").disabled = false;
 
-    writeToStream('\n');
+    writeToStream('\04');
     await readOne();
 }
 
@@ -199,12 +198,15 @@ const writeToStream = (...lines) => {
     const writer = outputStream.getWriter();
     lines.forEach((line) => {
         console.log('[SEND]', line);
-        if (inRawRepl == false) { 
-            console.log("sending normal string");
-            writer.write(line + '\r');
-        } else {
+        if (inRawRepl == true) { 
             console.log("sending raw repl string");
             writer.write(line + '\04');
+        } else if (controlChar == true) {
+            console.log("sending control character");
+            controlChar = false;
+            writer.write(line);
+        } else {
+            writer.write(line + '\n');
         }
     });
     writer.releaseLock();
