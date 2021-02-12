@@ -5,24 +5,21 @@ let outputDone;
 let inputStream;
 let outputStream;
 
+var inRawRepl = false;
+
 const connectButton = document.getElementById('connectButton');
 const disconnectButton = document.getElementById('disconnectButton')
-const ctrlaButton = document.getElementById('ctrla')
-const ctrlbButton = document.getElementById('ctrlb')
-const ctrlcButton = document.getElementById('ctrlc')
-const ctrldButton = document.getElementById('ctrld')
-const ctrleButton = document.getElementById('ctrle')
+const ctrlAButton = document.getElementById('ctrla')
+const ctrlBButton = document.getElementById('ctrlb')
+const ctrlCButton = document.getElementById('ctrlc')
+const ctrlDButton = document.getElementById('ctrld')
+const ctrlEButton = document.getElementById('ctrle')
 const enterRawREPLButton = document.getElementById('enterRawREPL')
 const leaveRawREPLButton = document.getElementById('leaveRawREPL')
 const sendButton = document.getElementById('send')
 const clearButton = document.getElementById('clear')
 
 
-window.addEventListener('DOMContentLoaded', e => {
-    const notSupported = document.getElementById('notSupported');
-    notSupported.classList.toggle('hidden', 'serial' in navigator);
-
-});
 
 connectButton.addEventListener('click', e => {
     clickConnect();
@@ -32,23 +29,23 @@ disconnectButton.addEventListener('click', e => {
     disconnect();
 })
 
-ctrlaButton.addEventListener('click', e => {
+ctrlAButton.addEventListener('click', e => {
     writeToStream('\01');
 })
 
-ctrlbButton.addEventListener('click', e => {
+ctrlBButton.addEventListener('click', e => {
     writeToStream('\02');
 })
 
-ctrlcButton.addEventListener('click', e => {
+ctrlCButton.addEventListener('click', e => {
     writeToStream('\03\03');
 })
 
-ctrldButton.addEventListener('click', e => {
+ctrlDButton.addEventListener('click', e => {
     writeToStream('\04');
 })
 
-ctrleButton.addEventListener('click',e => {
+ctrlEButton.addEventListener('click',e => {
     writeToStream('\05')
 } )
 
@@ -72,18 +69,30 @@ clearButton.addEventListener('click', e => {
 
 
 enterRawREPLButton.addEventListener('click',e => {
-    writeToStream('\01\05A\x01')
+   
+    console.log("entering Raw REPL");
+    writeToStream('\01\05A\x01');
+    inRawRepl = true;
 } )
 
 leaveRawREPLButton.addEventListener('click',e => {
+    console.log("leaving Raw REPL");
     writeToStream('\04\02')
+    inRawRepl = false;
 } )
 
 
 //Connect to the Serial Port
 const connect = async () => {
+
+    var baudrate = document.getElementById('baudrate').value;
+    var databits = document.getElementById('databits').value;
+    var stopbits = document.getElementById('stopbits').value;
+    var parity = document.getElementById('parity').value;
+
+    console.log('baudrate: '+baudrate+' databits: '+databits+' parity: '+parity+ ' stopbits: '+stopbits)
     port = await navigator.serial.requestPort();
-    await port.open({ baudRate: 115200 })  // Permission issues caused by this
+    await port.open({ baudRate: baudrate, dataBits: databits, parity: parity, stopBits: stopbits })  // Permission issues caused by this
 
 
     //Creating an Input Stream 
@@ -97,6 +106,13 @@ const connect = async () => {
     const encoder = new TextEncoderStream();
     outputDone = encoder.readable.pipeTo(port.writable);
     outputStream = encoder.writable;
+
+    document.getElementById("connectButton").disabled = true;
+    document.getElementById('databits').disabled = true;
+    document.getElementById('baudrate').disabled = true;
+    document.getElementById('stopbits').disabled = true;
+    document.getElementById('parity').disabled = true;
+    document.getElementById("disconnectButton").disabled = false;
 
     writeToStream('\n');
     await readOne();
@@ -120,6 +136,12 @@ const disconnect = async () => {
 
     await port.close();
     port = null;
+    document.getElementById("connectButton").disabled = false;
+    document.getElementById('databits').disabled = false;
+    document.getElementById('parity').disabled = false;
+    document.getElementById('stopbits').disabled = false;
+    document.getElementById('baudrate').disabled = false;
+    document.getElementById("disconnectButton").disabled = true;
 }
 
 const clickConnect = async () => {
@@ -156,6 +178,7 @@ const readOne = async () => {
     }
 }
 
+/*
 function findTextInBuffer(textList,textToFind) {
     let wordArrayPosition = 0;
     textList.some((el, idx) => {
@@ -169,13 +192,20 @@ function findTextInBuffer(textList,textToFind) {
     })
     return wordArrayPosition
 }
+*/
 
 
 const writeToStream = (...lines) => {
     const writer = outputStream.getWriter();
     lines.forEach((line) => {
         console.log('[SEND]', line);
-        writer.write(line + '\r');
+        if (inRawRepl == false) { 
+            console.log("sending normal string");
+            writer.write(line + '\r');
+        } else {
+            console.log("sending raw repl string");
+            writer.write(line + '\04');
+        }
     });
     writer.releaseLock();
 }
