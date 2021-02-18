@@ -2,18 +2,18 @@
 <html lang="en">
 
 <head>
-
   <meta charset="utf-8">
   <title>Serial Micropython REPL (pico)</title>
-  <meta name="description" content="">
-  <meta name="author" content="">
-
+  <meta name="description" content="Micropython REPL in browser (chrome only?)">
+  <meta name="author" content="Russell 'UKScone' Davis">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="images/favicon.png">
 
-  <!-- CSS
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-
+  <!-- CSS -->
+  <link rel="stylesheet" href="lib/codemirror.css">
+  
   <style>
     textarea,
     [contenteditable] {
@@ -31,24 +31,15 @@
     }
 
     .CodeMirror {
-      border: 1px solid #000;
+      border: 2px solid #000;
       font-size: 16px;
     }
-
-
   </style>
 
-  <!-- Favicon
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <link rel="icon" type="image/png" href="images/favicon.png">
-
+  <!-- Javascript -->
   <script src="lib/codemirror.js"></script>
-<link rel="stylesheet" href="lib/codemirror.css">
-<script src="mode/python/python.js"></script>
-
-
+  <script src="mode/python/python.js"></script>
 </head>
-
 <body>
 
   <div class="container">
@@ -56,6 +47,8 @@
   <select id="ports">
     <option value="prompt">Add a port...</option>
   </select> -->
+    <button id="helpButton" onclick="alert('blah blah blah\nblah\nblah\nblah\n\ncode hacked, slashed & copy-pasted by UKScone\n\nSource: https://github.com/ukscone/serial-repl-in-browser')">Help</button>
+    <br/>
     <button id="connectButton">Connect</button>
     <button id='disconnectButton' disabled="true">Disconnect</button>
     <label for="baudrate">Baud rate:</label>
@@ -107,7 +100,8 @@
     <label>Input</label>
     <br />
     <textarea rows="10" cols="60" id="multiLineInput" wrap="hard"></textarea>
-    <br />
+    <br/>
+    <button id="run">Run</button>
     <button id="send">Send</button>
     <button id="clear">Clear</button>
     <br />
@@ -117,6 +111,7 @@
     <textarea readonly rows="10" cols="60" id="multiLineOutput"></textarea>
 
   </div>
+
 <script>
   var editor = CodeMirror.fromTextArea(document.getElementById("multiLineInput"), {
     
@@ -127,7 +122,9 @@
   editor.setSize("650","200");
 </script>  
 
-  <Script src="index.js"></Script>
+<!-- 'App's' Javascript -->
+<script src="js/index.js"></script>
+  
 </body>
 
 </html>

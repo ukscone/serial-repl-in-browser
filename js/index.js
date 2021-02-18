@@ -16,6 +16,7 @@ const leavePasteModeButton = document.getElementById('leavePasteMode')
 const enterPasteModeButton = document.getElementById('enterPasteMode')
 const enterRawREPLButton = document.getElementById('enterRawREPL')
 const leaveRawREPLButton = document.getElementById('leaveRawREPL')
+const runButton = document.getElementById('run')
 const sendButton = document.getElementById('send')
 const clearButton = document.getElementById('clear')
 
@@ -45,6 +46,19 @@ leavePasteModeButton.addEventListener('click', e => {
 
 enterPasteModeButton.addEventListener('click', e => {
     writeToStream('\05')
+})
+
+runButton.addEventListener('click', e => {
+    it=editor.getValue()
+
+    console.log(it);
+    ait = it.split('\n');
+    console.log(ait);
+    writeToStream('\05')
+    for (i = 0; i < ait.length; i++) {
+        writeToStream(ait[i]);
+    }
+    writeToStream('\04');
 })
 
 
