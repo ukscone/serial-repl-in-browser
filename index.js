@@ -43,42 +43,45 @@ leavePasteModeButton.addEventListener('click', e => {
     writeToStream('\04');
 })
 
-enterPasteModeButton.addEventListener('click',e => {
+enterPasteModeButton.addEventListener('click', e => {
     writeToStream('\05')
-} )
+})
 
 
 sendButton.addEventListener('click', e => {
-    var inputText = document.getElementById('multiLineInput')
-    it = inputText.value
+    it=editor.getValue()
+
+    //var inputText = document.getElementById('multiLineInput')
+    //it = inputText.value
     console.log(it);
     ait = it.split('\n');
     console.log(ait);
     for (i = 0; i < ait.length; i++) {
         writeToStream(ait[i]);
-      }
-    
+    }
+
 })
 
 clearButton.addEventListener('click', e => {
-    document.getElementById('multiLineInput').value = "";
+    editor.getDoc().setValue('');
+    //document.getElementById('multiLineInput').value = "";
 })
 
 
 
-enterRawREPLButton.addEventListener('click',e => {
-   
+enterRawREPLButton.addEventListener('click', e => {
+
     console.log("entering Raw REPL");
     writeToStream('\01\05A\x01');
     inRawRepl = true;
-} )
+})
 
-leaveRawREPLButton.addEventListener('click',e => {
+leaveRawREPLButton.addEventListener('click', e => {
     inRawRepl = false;
     console.log("leaving Raw REPL");
     writeToStream('\04\02')
-    
-} )
+
+})
 
 
 //Connect to the Serial Port
@@ -89,9 +92,14 @@ const connect = async () => {
     var stopbits = document.getElementById('stopbits').value;
     var parity = document.getElementById('parity').value;
 
-    console.log('baudrate: '+baudrate+' databits: '+databits+' parity: '+parity+ ' stopbits: '+stopbits)
+    console.log('baudrate: ' + baudrate + ' databits: ' + databits + ' parity: ' + parity + ' stopbits: ' + stopbits)
     port = await navigator.serial.requestPort();
-    await port.open({ baudRate: baudrate, dataBits: databits, parity: parity, stopBits: stopbits })  // Permission issues caused by this
+    await port.open({
+        baudRate: baudrate,
+        dataBits: databits,
+        parity: parity,
+        stopBits: stopbits
+    }) // Permission issues caused by this
 
 
     //Creating an Input Stream 
@@ -121,7 +129,7 @@ const connect = async () => {
 const disconnect = async () => {
     if (reader) {
         await reader.cancel();
-        await inputDone.catch(() => { });
+        await inputDone.catch(() => {});
         reader = null;
         inputDone = null;
     }
@@ -151,7 +159,10 @@ const readLoop = async () => {
 
 
     while (true) {
-        const { value, done } = await reader.read();
+        const {
+            value,
+            done
+        } = await reader.read();
         if (value) {
             console.log(value);
 
@@ -168,10 +179,13 @@ const readLoop = async () => {
 const readOne = async () => {
 
     for (let i = 0; i < 20; i++) {
-        const { value, done } = await reader.read();
+        const {
+            value,
+            done
+        } = await reader.read();
         if (value) {
             console.log(value);
-            document.getElementById('multiLineOutput').textContent += value;   
+            document.getElementById('multiLineOutput').textContent += value;
             document.getElementById("multiLineOutput").scrollTop = document.getElementById("multiLineOutput").scrollHeight
         }
     }
@@ -198,7 +212,7 @@ const writeToStream = (...lines) => {
     const writer = outputStream.getWriter();
     lines.forEach((line) => {
         console.log('[SEND]', line);
-        if (inRawRepl == true) { 
+        if (inRawRepl == true) {
             console.log("sending raw repl string");
             writer.write(line + '\04');
         } else if (controlChar == true) {
@@ -206,7 +220,8 @@ const writeToStream = (...lines) => {
             controlChar = false;
             writer.write(line);
         } else {
-            writer.write(line + '\n');
+            console.log("sending normal char");
+            writer.write(line + '\r');
         }
     });
     writer.releaseLock();
